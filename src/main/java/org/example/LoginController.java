@@ -168,9 +168,13 @@ public class LoginController {
         }
     }
 
-    private static void appointCalendar(LocalDate startDate, LocalDate endDate, Label messageLabel) {
+    public static void appointCalendar(LocalDate startDate, LocalDate endDate, Label messageLabel) {
         if (currentUser instanceof Admin) {
+            Calendario calendario = new Calendario();
+            calendario.setInicioEpocaExames(startDate);
+            calendario.setFimEpocaExames(endDate);
             ((Admin) currentUser).definirCalendarioAcademico(startDate, endDate, startDate.plusMonths(3), endDate.plusMonths(1));
+            examScheduler = new ExamScheduler(calendario, roomManager);
             messageLabel.setText("Calendar appointed successfully!");
         }
     }

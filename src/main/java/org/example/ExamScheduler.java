@@ -1,10 +1,12 @@
 package org.example;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
-public class ExamScheduler {
+public class ExamScheduler implements Serializable {
+    private static final long serialVersionUID = 1L;
     private List<Date> examDates = new ArrayList<>();
     private List<Date> presentationDates = new ArrayList<>();
     private Calendario calendario;

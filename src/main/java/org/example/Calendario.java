@@ -1,8 +1,10 @@
 package org.example;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Calendario {
+public class Calendario implements Serializable {
+    private static final long serialVersionUID = 1L;
     private LocalDate inicioSemestre;
     private LocalDate fimSemestre;
     private LocalDate inicioEpocaExames;
