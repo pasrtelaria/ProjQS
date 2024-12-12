@@ -91,8 +91,11 @@ public class LoginController {
         Button appointCalendarButton = new Button("Appoint Calendar");
         grid.add(appointCalendarButton, 1, 6);
 
+        Button logoutButton = new Button("Logout");
+        grid.add(logoutButton, 1, 7);
+
         Label messageLabel = new Label();
-        grid.add(messageLabel, 1, 7);
+        grid.add(messageLabel, 1, 8);
 
         scheduleExamsButton.setOnAction(e -> {
             LocalDate date = LocalDate.parse(dateTextField.getText());
@@ -104,6 +107,13 @@ public class LoginController {
         });
 
         appointCalendarButton.setOnAction(e -> showAppointCalendarWindow());
+
+        logoutButton.setOnAction(e -> {
+            currentUser = null;
+            primaryStage.close();
+            Stage loginStage = new Stage();
+            new LoginApp().start(loginStage);
+        });
 
         if (currentUser instanceof Admin) {
             appointCalendarButton.setVisible(true);
@@ -160,11 +170,11 @@ public class LoginController {
         if (selectedRooms != null && !selectedRooms.isEmpty()) {
             StringBuilder roomsInfo = new StringBuilder("Exams scheduled successfully in rooms: ");
             for (Room room : selectedRooms) {
-                roomsInfo.append(room.getNum()).append(" (Capacity: ").append(room.getCapacity()).append("), ");
+                roomsInfo.append("\n").append(room.getNum()).append(" (Capacity: ").append(room.getCapacity()).append(")");
             }
             messageLabel.setText(roomsInfo.toString());
         } else {
-            messageLabel.setText("No suitable rooms found for scheduling exams.");
+            messageLabel.setText("Date not available for exam scheduling.");
         }
     }
 
