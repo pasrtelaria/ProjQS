@@ -12,11 +12,13 @@ public class ExamScheduler implements Serializable {
     private List<Date> presentationDates = new ArrayList<>();
     private Calendario calendario;
     private RoomManager roomManager;
+    private Map<Date, List<Room>> scheduledExams = new HashMap<>();
 
     public ExamScheduler(Calendario calendario, RoomManager roomManager) {
         this.calendario = calendario;
         this.roomManager = roomManager;
     }
+
     public ExamScheduler() {
     }
 
@@ -62,6 +64,7 @@ public class ExamScheduler implements Serializable {
             List<Room> rooms = roomManager.searchRoom(root, numStudents);
             if (rooms != null) {
                 addExamDate(date);
+                scheduledExams.put(date, rooms);
                 return rooms;
             } else {
                 System.out.println("No available room for the specified number of students.");
@@ -88,5 +91,9 @@ public class ExamScheduler implements Serializable {
             System.out.println("Date not available for presentation scheduling.");
         }
         return Collections.emptyList();
+    }
+
+    public Map<Date, List<Room>> getScheduledExams() {
+        return scheduledExams;
     }
 }

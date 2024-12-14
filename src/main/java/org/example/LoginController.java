@@ -88,14 +88,17 @@ public class LoginController {
         Button scheduleExamsButton = new Button("Schedule Exams");
         grid.add(scheduleExamsButton, 1, 5);
 
+        Button schedulePresentationButton = new Button("Schedule Presentation");
+        grid.add(schedulePresentationButton, 1, 6);
+
         Button appointCalendarButton = new Button("Appoint Calendar");
-        grid.add(appointCalendarButton, 1, 6);
+        grid.add(appointCalendarButton, 1, 7);
 
         Button logoutButton = new Button("Logout");
-        grid.add(logoutButton, 1, 7);
+        grid.add(logoutButton, 1, 8);
 
         Label messageLabel = new Label();
-        grid.add(messageLabel, 1, 8);
+        grid.add(messageLabel, 1, 9);
 
         scheduleExamsButton.setOnAction(e -> {
             LocalDate date = LocalDate.parse(dateTextField.getText());
@@ -104,6 +107,13 @@ public class LoginController {
             int numStudents = Integer.parseInt(numStudentsTextField.getText());
             boolean needComputer = computerCheckBox.isSelected();
             scheduleExams(dateTime, numStudents, needComputer, messageLabel);
+        });
+
+        schedulePresentationButton.setOnAction(e -> {
+            LocalDate date = LocalDate.parse(dateTextField.getText());
+            int numStudents = Integer.parseInt(numStudentsTextField.getText());
+            boolean needComputer = computerCheckBox.isSelected();
+            schedulePresentation(date, numStudents, needComputer, messageLabel);
         });
 
         appointCalendarButton.setOnAction(e -> showAppointCalendarWindow());
@@ -175,6 +185,20 @@ public class LoginController {
             messageLabel.setText(roomsInfo.toString());
         } else {
             messageLabel.setText("Error scheduling exam.");
+        }
+    }
+
+    private static void schedulePresentation(LocalDate date, int numStudents, boolean needComputer, Label messageLabel) {
+        List<Room> selectedRooms;
+        selectedRooms = examScheduler.schedulePresentation(date, numStudents, needComputer);
+        if (selectedRooms != null && !selectedRooms.isEmpty()) {
+            StringBuilder roomsInfo = new StringBuilder("Presentations scheduled successfully in rooms: ");
+            for (Room room : selectedRooms) {
+                roomsInfo.append("\n").append(room.getNum()).append(" (Capacity: ").append(room.getCapacity()).append(")");
+            }
+            messageLabel.setText(roomsInfo.toString());
+        } else {
+            messageLabel.setText("Error scheduling presentation.");
         }
     }
 
