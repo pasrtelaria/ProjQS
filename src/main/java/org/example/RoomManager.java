@@ -84,6 +84,9 @@ public class RoomManager implements Serializable {
             room.setTimeout(true);
             room = searchCapacity(current, cap);
         }
+        for (Room result : results) {
+            result.setTimeout(false);
+        }
         return results;
     }
 

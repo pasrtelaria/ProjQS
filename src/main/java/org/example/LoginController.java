@@ -174,7 +174,7 @@ public class LoginController {
             }
             messageLabel.setText(roomsInfo.toString());
         } else {
-            messageLabel.setText("Date not available for exam scheduling.");
+            messageLabel.setText("Error scheduling exam.");
         }
     }
 

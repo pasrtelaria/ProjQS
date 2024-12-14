@@ -1,6 +1,7 @@
 package org.example;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -71,11 +72,21 @@ public class ExamScheduler implements Serializable {
         return Collections.emptyList();
     }
 
-    public void schedulePresentation(Date date) {
-        if (isPresentationDateAvailable(date)) {
-            addPresentationDate(date);
+    public List<Room> schedulePresentation(LocalDate date, int numStudents, boolean needComputer) {
+        LocalDateTime dateTime = date.atStartOfDay();
+        Date presentationDate = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+        if (isDateWithinExamPeriod(presentationDate) && isPresentationDateAvailable(presentationDate)) {
+            Room root = needComputer ? roomManager.getPcRoot() : roomManager.getRoot();
+            List<Room> rooms = roomManager.searchRoom(root, numStudents);
+            if (rooms != null) {
+                addPresentationDate(presentationDate);
+                return rooms;
+            } else {
+                System.out.println("No available room for the specified number of students.");
+            }
         } else {
             System.out.println("Date not available for presentation scheduling.");
         }
+        return Collections.emptyList();
     }
 }
