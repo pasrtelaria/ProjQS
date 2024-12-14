@@ -1,6 +1,6 @@
 package org.example;
 
-import java.io.Serializable;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -8,10 +8,11 @@ import java.util.*;
 
 public class ExamScheduler implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static final String SCHEDULE_FILE = "schedule.ser";
     private List<Date> examDates = new ArrayList<>();
     private List<Date> presentationDates = new ArrayList<>();
     private Calendario calendario;
-    private RoomManager roomManager;
+    RoomManager roomManager;
     private Map<Usuario, Map<Date, List<Room>>> userScheduledExams = new HashMap<>();
     private Map<Usuario, Map<Date, List<Room>>> userScheduledPresentations = new HashMap<>();
 
@@ -66,6 +67,7 @@ public class ExamScheduler implements Serializable {
             if (rooms != null) {
                 addExamDate(date);
                 userScheduledExams.computeIfAbsent(user, k -> new HashMap<>()).put(date, rooms);
+                saveSchedule();
                 return rooms;
             } else {
                 System.out.println("No available room for the specified number of students.");
@@ -85,6 +87,7 @@ public class ExamScheduler implements Serializable {
             if (rooms != null) {
                 addPresentationDate(presentationDate);
                 userScheduledPresentations.computeIfAbsent(user, k -> new HashMap<>()).put(presentationDate, rooms);
+                saveSchedule();
                 return rooms;
             } else {
                 System.out.println("No available room for the specified number of students.");
@@ -101,5 +104,25 @@ public class ExamScheduler implements Serializable {
 
     public Map<Date, List<Room>> getScheduledPresentations(Usuario user) {
         return userScheduledPresentations.getOrDefault(user, Collections.emptyMap());
+    }
+
+    public void saveSchedule() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(SCHEDULE_FILE))) {
+            oos.writeObject(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static ExamScheduler loadSchedule() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(SCHEDULE_FILE))) {
+            return (ExamScheduler) ois.readObject();
+        } catch (FileNotFoundException e) {
+            System.out.println("Schedule file not found, starting with a new schedule.");
+            return new ExamScheduler();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return new ExamScheduler();
+        }
     }
 }

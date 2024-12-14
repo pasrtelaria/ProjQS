@@ -27,11 +27,16 @@ public class LoginController {
 
     static {
         loadUsuarios();
+        examScheduler = ExamScheduler.loadSchedule();
     }
 
     public static void setRoomManager(RoomManager rm) {
         roomManager = rm;
-        examScheduler = new ExamScheduler(new Calendario(), roomManager);
+        if (examScheduler == null) {
+            examScheduler = new ExamScheduler(new Calendario(), roomManager);
+        } else {
+            examScheduler.roomManager = roomManager;
+        }
     }
 
     public static void loginUsuario(String username, String password, Label messageLabel, Stage primaryStage) {
@@ -259,6 +264,7 @@ public class LoginController {
             calendario.setFimEpocaExames(endDate);
             ((Admin) currentUser).definirCalendarioAcademico(startDate, endDate, startDate.plusMonths(3), endDate.plusMonths(1));
             examScheduler = new ExamScheduler(calendario, roomManager);
+            examScheduler.saveSchedule();
             messageLabel.setText("Calendar appointed successfully!");
         }
     }
