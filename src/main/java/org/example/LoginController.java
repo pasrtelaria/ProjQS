@@ -13,6 +13,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,11 +95,14 @@ public class LoginController {
         Button appointCalendarButton = new Button("Appoint Calendar");
         grid.add(appointCalendarButton, 1, 7);
 
+        Button showScheduledButton = new Button("Show Scheduled Exams and Presentations");
+        grid.add(showScheduledButton, 1, 8);
+
         Button logoutButton = new Button("Logout");
-        grid.add(logoutButton, 1, 8);
+        grid.add(logoutButton, 1, 9);
 
         Label messageLabel = new Label();
-        grid.add(messageLabel, 1, 9);
+        grid.add(messageLabel, 1, 10);
 
         scheduleExamsButton.setOnAction(e -> {
             LocalDate date = LocalDate.parse(dateTextField.getText());
@@ -117,6 +121,8 @@ public class LoginController {
         });
 
         appointCalendarButton.setOnAction(e -> showAppointCalendarWindow());
+
+        showScheduledButton.setOnAction(e -> showScheduledExamsAndPresentations());
 
         logoutButton.setOnAction(e -> {
             currentUser = null;
@@ -200,6 +206,50 @@ public class LoginController {
         } else {
             messageLabel.setText("Error scheduling presentation.");
         }
+    }
+
+    private static void showScheduledExamsAndPresentations() {
+        Stage window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.setTitle("Scheduled Exams and Presentations");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        Label examsLabel = new Label("Scheduled Exams:");
+        grid.add(examsLabel, 0, 0);
+
+        StringBuilder examsInfo = new StringBuilder();
+        for (Map.Entry<Date, List<Room>> entry : examScheduler.getScheduledExams().entrySet()) {
+            examsInfo.append("Date: ").append(entry.getKey()).append("\nRooms: ");
+            for (Room room : entry.getValue()) {
+                examsInfo.append(room.getNum()).append(" (Capacity: ").append(room.getCapacity()).append("), ");
+            }
+            examsInfo.append("\n\n");
+        }
+
+        Label examsInfoLabel = new Label(examsInfo.toString());
+        grid.add(examsInfoLabel, 0, 1);
+
+        Label presentationsLabel = new Label("Scheduled Presentations:");
+        grid.add(presentationsLabel, 0, 2);
+
+        StringBuilder presentationsInfo = new StringBuilder();
+        for (Map.Entry<Date, List<Room>> entry : examScheduler.getScheduledPresentations().entrySet()) {
+            presentationsInfo.append("Date: ").append(entry.getKey()).append("\nRooms: ");
+            for (Room room : entry.getValue()) {
+                presentationsInfo.append(room.getNum()).append(" (Capacity: ").append(room.getCapacity()).append("), ");
+            }
+            presentationsInfo.append("\n\n");
+        }
+
+        Label presentationsInfoLabel = new Label(presentationsInfo.toString());
+        grid.add(presentationsInfoLabel, 0, 3);
+
+        Scene scene = new Scene(grid, 400, 400);
+        window.setScene(scene);
+        window.showAndWait();
     }
 
     public static void appointCalendar(LocalDate startDate, LocalDate endDate, Label messageLabel) {
