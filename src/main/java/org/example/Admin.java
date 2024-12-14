@@ -35,7 +35,14 @@ public class Admin extends Usuario {
         if (calendario == null) {
             throw new IllegalStateException("Calendario is not defined.");
         }
-        examScheduler.scheduleExam(dateTime, numStudents, needComputer);
+        examScheduler.scheduleExam(this, dateTime, numStudents, needComputer);
+    }
+
+    public void schedulePresentation(LocalDate date, int numStudents, boolean needComputer) {
+        if (calendario == null) {
+            throw new IllegalStateException("Calendario is not defined.");
+        }
+        examScheduler.schedulePresentation(this, date, numStudents, needComputer);
     }
 
     public void appointCalendar() {

@@ -12,8 +12,8 @@ public class ExamScheduler implements Serializable {
     private List<Date> presentationDates = new ArrayList<>();
     private Calendario calendario;
     private RoomManager roomManager;
-    private Map<Date, List<Room>> scheduledExams = new HashMap<>();
-    private Map<Date, List<Room>> scheduledPresentations = new HashMap<>();
+    private Map<Usuario, Map<Date, List<Room>>> userScheduledExams = new HashMap<>();
+    private Map<Usuario, Map<Date, List<Room>>> userScheduledPresentations = new HashMap<>();
 
     public ExamScheduler(Calendario calendario, RoomManager roomManager) {
         this.calendario = calendario;
@@ -58,14 +58,14 @@ public class ExamScheduler implements Serializable {
         return !presentationDates.contains(date);
     }
 
-    public List<Room> scheduleExam(LocalDateTime dateTime, int numStudents, boolean needComputer) {
+    public List<Room> scheduleExam(Usuario user, LocalDateTime dateTime, int numStudents, boolean needComputer) {
         Date date = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
         if (isDateWithinExamPeriod(date) && isDateAvailable(date) && isDateAvailableWith24hGap(date)) {
             Room root = needComputer ? roomManager.getPcRoot() : roomManager.getRoot();
             List<Room> rooms = roomManager.searchRoom(root, numStudents);
             if (rooms != null) {
                 addExamDate(date);
-                scheduledExams.put(date, rooms);
+                userScheduledExams.computeIfAbsent(user, k -> new HashMap<>()).put(date, rooms);
                 return rooms;
             } else {
                 System.out.println("No available room for the specified number of students.");
@@ -76,7 +76,7 @@ public class ExamScheduler implements Serializable {
         return Collections.emptyList();
     }
 
-    public List<Room> schedulePresentation(LocalDate date, int numStudents, boolean needComputer) {
+    public List<Room> schedulePresentation(Usuario user, LocalDate date, int numStudents, boolean needComputer) {
         LocalDateTime dateTime = date.atStartOfDay();
         Date presentationDate = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
         if (isDateWithinExamPeriod(presentationDate) && isPresentationDateAvailable(presentationDate)) {
@@ -84,7 +84,7 @@ public class ExamScheduler implements Serializable {
             List<Room> rooms = roomManager.searchRoom(root, numStudents);
             if (rooms != null) {
                 addPresentationDate(presentationDate);
-                scheduledPresentations.put(presentationDate, rooms);
+                userScheduledPresentations.computeIfAbsent(user, k -> new HashMap<>()).put(presentationDate, rooms);
                 return rooms;
             } else {
                 System.out.println("No available room for the specified number of students.");
@@ -95,11 +95,11 @@ public class ExamScheduler implements Serializable {
         return Collections.emptyList();
     }
 
-    public Map<Date, List<Room>> getScheduledExams() {
-        return scheduledExams;
+    public Map<Date, List<Room>> getScheduledExams(Usuario user) {
+        return userScheduledExams.getOrDefault(user, Collections.emptyMap());
     }
 
-    public Map<Date, List<Room>> getScheduledPresentations() {
-        return scheduledPresentations;
+    public Map<Date, List<Room>> getScheduledPresentations(Usuario user) {
+        return userScheduledPresentations.getOrDefault(user, Collections.emptyMap());
     }
 }

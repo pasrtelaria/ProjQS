@@ -17,6 +17,6 @@ public class Coordenador extends Usuario {
     }
 
     public void scheduleExams(LocalDateTime dateTime, int numStudents, boolean needComputer) {
-        examScheduler.scheduleExam(dateTime, numStudents, needComputer);
+        examScheduler.scheduleExam(this, dateTime, numStudents, needComputer);
     }
 }

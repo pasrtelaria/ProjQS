@@ -182,7 +182,7 @@ public class LoginController {
 
     private static void scheduleExams(LocalDateTime dateTime, int numStudents, boolean needComputer, Label messageLabel) {
         List<Room> selectedRooms;
-        selectedRooms = examScheduler.scheduleExam(dateTime, numStudents, needComputer);
+        selectedRooms = examScheduler.scheduleExam(currentUser, dateTime, numStudents, needComputer);
         if (selectedRooms != null && !selectedRooms.isEmpty()) {
             StringBuilder roomsInfo = new StringBuilder("Exams scheduled successfully in rooms: ");
             for (Room room : selectedRooms) {
@@ -196,7 +196,7 @@ public class LoginController {
 
     private static void schedulePresentation(LocalDate date, int numStudents, boolean needComputer, Label messageLabel) {
         List<Room> selectedRooms;
-        selectedRooms = examScheduler.schedulePresentation(date, numStudents, needComputer);
+        selectedRooms = examScheduler.schedulePresentation(currentUser, date, numStudents, needComputer);
         if (selectedRooms != null && !selectedRooms.isEmpty()) {
             StringBuilder roomsInfo = new StringBuilder("Presentations scheduled successfully in rooms: ");
             for (Room room : selectedRooms) {
@@ -221,7 +221,7 @@ public class LoginController {
         grid.add(examsLabel, 0, 0);
 
         StringBuilder examsInfo = new StringBuilder();
-        for (Map.Entry<Date, List<Room>> entry : examScheduler.getScheduledExams().entrySet()) {
+        for (Map.Entry<Date, List<Room>> entry : examScheduler.getScheduledExams(currentUser).entrySet()) {
             examsInfo.append("Date: ").append(entry.getKey()).append("\nRooms: ");
             for (Room room : entry.getValue()) {
                 examsInfo.append(room.getNum()).append(" (Capacity: ").append(room.getCapacity()).append("), ");
@@ -236,7 +236,7 @@ public class LoginController {
         grid.add(presentationsLabel, 0, 2);
 
         StringBuilder presentationsInfo = new StringBuilder();
-        for (Map.Entry<Date, List<Room>> entry : examScheduler.getScheduledPresentations().entrySet()) {
+        for (Map.Entry<Date, List<Room>> entry : examScheduler.getScheduledPresentations(currentUser).entrySet()) {
             presentationsInfo.append("Date: ").append(entry.getKey()).append("\nRooms: ");
             for (Room room : entry.getValue()) {
                 presentationsInfo.append(room.getNum()).append(" (Capacity: ").append(room.getCapacity()).append("), ");
